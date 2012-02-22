@@ -1,4 +1,4 @@
-``django-thumbnailfield`` is a enhanced ImageField of Django
+django-thumbnailfield is a enhanced ImageField of Django
 
 It has the follwing features
 
@@ -20,9 +20,10 @@ Prepare to use
 
 1.  Append 'thumbnailfield' to ``INSTALLED_APPS``
 
-2.  Set ``MEDIA_ROOT`` correctly. For example::
+2.  Set ``MEDIA_ROOT`` correctly.
+    For example::
 
-    MEDIA_ROOT = os.path.join(os.path.dirname(__file__), '../static')
+        MEDIA_ROOT = os.path.join(os.path.dirname(__file__), '../static')
 
 
 Example mini blog app
@@ -134,7 +135,7 @@ Create your own custom process method like below::
     # otherwise just forget about this.
     get_sepia_and_cropped_image.error_check = _sepia_and_cropped_error_check
         
-Use defined method in pattern like below
+Use defined method in pattern like below::
 
     # models.py
     # ...
@@ -143,7 +144,7 @@ Use defined method in pattern like below
         }
     # ...
 
-Or define the method in THUMBNAILFIELD_PROCESS_METHOD_TABLE and use as a string anme
+Or define the method in THUMBNAILFIELD_PROCESS_METHOD_TABLE and use as a string anme::
 
     # settings.py
     from thumbnailfield import DEFAULT_PROCESS_METHOD_TABLE
