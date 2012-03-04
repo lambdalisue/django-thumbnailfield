@@ -116,7 +116,7 @@ class ThumbnailFieldFile(ImageFieldFile):
         thumbnail filename is generated with utils.get_thumbnail_filename method.
         original path is path of this field file
         """
-        return get_thumbnail_filename(self.path, name)
+        return get_thumbnail_filename(self.name, name)
 
     def _get_image(self, force=False):
         """get PIL image of this field file
