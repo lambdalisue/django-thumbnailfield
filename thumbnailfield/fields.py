@@ -321,3 +321,18 @@ class ThumbnailField(ImageField):
             del patterns['']
         self.patterns = patterns
         super(ThumbnailField, self).__init__(verbose_name, name, width_field, height_field, **kwargs) 
+
+try:        
+    from south.modelsinspector import add_introspection_rules
+    rules = [
+        (
+            (ThumbnailField,),
+            [],
+            {
+                'patterns': ['patterns', {}],
+            },
+        )
+    ]
+    add_introspection_rules(rules, [r"^thumbnailfield.fields.ThumbnailField"])
+except ImportError:
+    pass
