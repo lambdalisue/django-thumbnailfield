@@ -128,8 +128,11 @@ class ThumbnailFieldFile(ImageFieldFile):
         """
         attr_name = '_image_cache'
         if force or not getattr(self, attr_name, None):
-            self.seek(0)
-            setattr(self, attr_name, Image.open(self.file))
+            if self:
+                self.seek(0)
+                setattr(self, attr_name, Image.open(self.file))
+            else:
+                return None
         return getattr(self, attr_name)
 
     def _get_thumbnail(self, name, force=False):
@@ -163,6 +166,8 @@ class ThumbnailFieldFile(ImageFieldFile):
         attr_name = '_thumbnail_file_%s_cache' % name
         if force or not getattr(self, attr_name, None):
             thumbs_file = self._create_thumbnail_file(name, force)
+            if not thumbs_file:
+                return None
             setattr(self, attr_name, thumbs_file)
         return getattr(self, attr_name)
 
@@ -173,8 +178,10 @@ class ThumbnailFieldFile(ImageFieldFile):
             patterns -- A process patterns to generate thumbnail
         """
         img = self._get_image()
-        thumb = get_processed_image(self, img, patterns)
-        return thumb
+        if img:
+            thumb = get_processed_image(self, img, patterns)
+            return thumb
+        return None
 
     def _create_thumbnail_file(self, name, force=False):
         """create thumbnail file and return ImageFieldFile
@@ -184,10 +191,12 @@ class ThumbnailFieldFile(ImageFieldFile):
             force -- used to force recreate PIL image instance from original image
         """
         thumbs = self._get_thumbnail(name, force)
-        thumbs_filename = self._get_thumbnail_filename(name)
-        save_to_storage(thumbs, self.storage, thumbs_filename, overwrite=True)
-        thumbs_file = ImageFieldFile(self.instance, self.field, thumbs_filename)
-        return thumbs_file
+        if thumbs:
+            thumbs_filename = self._get_thumbnail_filename(name)
+            save_to_storage(thumbs, self.storage, thumbs_filename, overwrite=True)
+            thumbs_file = ImageFieldFile(self.instance, self.field, thumbs_filename)
+            return thumbs_file
+        return None
 
     def _update_thumbnail_file(self, name):
         """update thumbnail file of storage
