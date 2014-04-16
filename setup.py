@@ -1,4 +1,5 @@
 # coding=utf-8
+import os
 import sys
 from setuptools import setup, find_packages
 
@@ -6,7 +7,6 @@ NAME = 'django-thumbnailfield'
 VERSION = '0.2.0'
 
 def read(filename):
-    import os
     BASE_DIR = os.path.dirname(__file__)
     filename = os.path.join(BASE_DIR, filename)
     with open(filename, 'r') as fi:
@@ -63,7 +63,9 @@ setup(
         '': ['README.rst',
              'requirements.txt',
              'requirements-test.txt',
-             'requirements-docs.txt'],
+             'requirements-docs.txt',
+             os.path.join('src', 'thumbnailfield', 'tests', 'lambdalisue.py'),
+             ],
     },
     zip_safe=True,
     install_requires=readlist('requirements.txt'),

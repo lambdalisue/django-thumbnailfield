@@ -1,5 +1,6 @@
 .coverage
 .profile
 .tox
+img
 database.db
 docs/_build
