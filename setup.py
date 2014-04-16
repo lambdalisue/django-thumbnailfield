@@ -1,40 +1,73 @@
-# vim: set fileencoding=utf8:
+# coding=utf-8
+import sys
 from setuptools import setup, find_packages
 
-version = '0.1.4'
+NAME = 'django-thumbnailfield'
+VERSION = '0.2.0'
 
 def read(filename):
-    import os.path
-    return open(os.path.join(os.path.dirname(__file__), filename)).read()
+    import os
+    BASE_DIR = os.path.dirname(__file__)
+    filename = os.path.join(BASE_DIR, filename)
+    with open(filename, 'r') as fi:
+        return fi.read()
+
+def readlist(filename):
+    rows = read(filename).split("\n")
+    rows = [x.strip() for x in rows if x.strip()]
+    return list(rows)
+
+# if we are running on python 3, enable 2to3 and
+# let it use the custom fixers from the custom_fixers
+# package.
+extra = {}
+if sys.version_info >= (3, 0):
+    extra.update(
+        use_2to3=True,
+    )
 
 setup(
-    name="django-thumbnailfield",
-    version=version,
-    description = "Enhanced ImageField which automatically generate thumbnails of the image",
-    long_description=read('README.rst'),
-    classifiers = [
+    name = NAME,
+    version = VERSION,
+    description = ("Enhanced ImageField with automatically generate thumbnail "
+                   "of the specified image"),
+    long_description = read('README.rst'),
+    classifiers = (
+        'Development Status :: 3 - Alpha',
+        'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
         'Topic :: Internet :: WWW/HTTP',
-    ],
-    keywords = "django fields image thumbnail",
-    author = "Alisue",
-    author_email = "lambdalisue@hashnote.net",
-    url=r"https://github.com/lambdalisue/django-thumbnailfield",
-    download_url = r"https://github.com/lambdalisue/django-thumbnailfield/tarball/master",
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Software Development :: Libraries :: Application Frameworks',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+    ),
+    keywords = "django app field image thumbnail",
+    author = 'Alisue',
+    author_email = 'lambdalisue@hashnote.net',
+    url = 'https://github.com/lambdalisue/%s' % NAME,
+    download_url = 'https://github.com/lambdalisue/%s/tarball/master' % NAME,
     license = 'MIT',
-    packages = find_packages(),
+    packages = find_packages('src'),
+    package_dir = {'': 'src'},
     include_package_data = True,
-    install_requires=[
-        'distribute',
-        'setuptools-git',
-        'PIL',
-    ],
-    test_suite='tests.runtests.runtests',
-    tests_require=[
-        'django>=1.3',
-        'PyYAML',
-    ],
+    package_data = {
+        '': ['README.rst',
+             'requirements.txt',
+             'requirements-test.txt',
+             'requirements-docs.txt'],
+    },
+    zip_safe=True,
+    install_requires=readlist('requirements.txt'),
+    test_suite='runtests.run_tests',
+    tests_require=readlist('requirements-test.txt'),
+    **extra
 )
