@@ -6,7 +6,7 @@ import os
 import tempfile
 from django.test import TestCase
 from django.core.files.base import File
-from .models import Entry
+from thumbnailfield.tests.models import Entry
 
 FILENAME = os.path.join(os.path.dirname(__file__), 'lambdalisue.bmp')
 

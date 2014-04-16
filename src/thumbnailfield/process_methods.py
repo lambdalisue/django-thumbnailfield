@@ -1,33 +1,26 @@
 # vim: set fileencoding=utf8:
 """
 Builtin ThumbnailField process methods
-
-
-AUTHOR:
-    lambdalisue[Ali su ae] (lambdalisue@hashnote.net)
-    
-Copyright:
-    Copyright 2011 Alisue allright reserved.
-
-License:
-    Licensed under the Apache License, Version 2.0 (the "License"); 
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-    Unliss required by applicable law or agreed to in writing, software
-    distributed under the License is distrubuted on an "AS IS" BASICS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
 """
-__AUTHOR__ = "lambdalisue (lambdalisue@hashnote.net)"
+__author__ = "Alisue <lambdalisue@hashnote.net>"
+from django.core.exceptions import ImproperlyConfigured
 from thumbnailfield.compatibility import ImageOps
-from thumbnailfield.exceptions import ThumbnailFieldPatternImproperlyConfigured
+
 
 def get_grayscale_image(img, width, height, **options):
-    """get grayscale image"""
+    """get grayscale image
+    
+    Attribute:
+        img -- PIL image instance
+        width -- width of thumbnail
+        height -- height of thumbnail
+        kwargs -- Options used in PIL thumbnail method
+        
+    Usage::
+        >>> from thumbnailfield.compatibility import Image
+        >>> img = Image.new('RGBA', (1000, 800))
+        >>> thumb = get_grayscale_image(img, 100, 100)
+    """
     grayscale = img.copy()
     if img.mode != 'L':
         grayscale = grayscale.convert('L')
@@ -35,11 +28,24 @@ def get_grayscale_image(img, width, height, **options):
 def _grayscale_error_check(f, img, width, height, **options):
     # grayscale pattern doesn't require width/height
     if width is not None or height is not None:
-        raise ThumbnailFieldPatternImproperlyConfigured(f, "'width' and 'height' must be None in 'grayscale' pattern")
+        raise ImproperlyConfigured(f, "'width' and 'height' must be None in "
+                                      "'grayscale' pattern")
 get_grayscale_image.error_check = _grayscale_error_check
 
 def get_sepia_image(img, width, height, **options):
-    """get sepia image"""
+    """get sepia image
+    
+    Attribute:
+        img -- PIL image instance
+        width -- width of thumbnail
+        height -- height of thumbnail
+        kwargs -- Options used in PIL thumbnail method
+        
+    Usage::
+        >>> from thumbnailfield.compatibility import Image
+        >>> img = Image.new('RGBA', (1000, 800))
+        >>> thumb = get_sepia_image(img, 100, 100)
+    """
     def make_linear_ramp(white):
         # putpalette expects [r,g,b,r,g,b,...]
         ramp = []
@@ -56,7 +62,8 @@ def get_sepia_image(img, width, height, **options):
     grayscale = ImageOps.autocontrast(grayscale)
 
     # apply sepia palette
-    grayscale.putpalette(map(int, sepia))
+    transform = lambda x: int(round(x))
+    grayscale.putpalette(map(transform, sepia))
 
     # convert back to RGB so we can save it as JPEG
     # (alternatively, save it in PNG or similar)
@@ -79,10 +86,7 @@ def get_cropped_image(img, width, height, left, upper, **options):
         kwargs -- Options used in PIL thumbnail method
         
     Usage::
-        >>> try:
-        ...     from PIL import Image
-        ... except ImportError:
-        ...     import Image
+        >>> from thumbnailfield.compatibility import Image
         >>> img = Image.new('RGBA', (1000, 800))
         >>> thumb = get_cropped_image(img, 100, 100, 0, 0)
         >>> assert thumb.size[0] == 100
@@ -95,9 +99,9 @@ def get_cropped_image(img, width, height, left, upper, **options):
 def _cropped_error_check(f, img, width, height, **options):
     # crop pattern required left/upper options
     if 'left' not in options:
-        raise ThumbnailFieldPatternImproperlyConfigured(f, "'crop' pattern required 'left' option")
+        raise ImproperlyConfigured(f, "'crop' pattern required 'left' option")
     if 'upper' not in options:
-        raise ThumbnailFieldPatternImproperlyConfigured(f, "'crop' pattern required 'upper' option")
+        raise ImproperlyConfigured(f, "'crop' pattern required 'upper' option")
 get_cropped_image.error_check = _cropped_error_check
 
 def get_resized_image(img, width, height, force=False, **options):
@@ -110,10 +114,7 @@ def get_resized_image(img, width, height, force=False, **options):
         kwargs -- Options used in PIL thumbnail method
         
     Usage::
-        >>> try:
-        ...     from PIL import Image
-        ... except ImportError:
-        ...     import Image
+        >>> from thumbnailfield.compatibility import Image
         >>> img = Image.new('RGBA', (1000, 800))
         >>> thumb = get_resized_image(img, 100, 100)
         >>> assert thumb.size[0] == 100
@@ -134,10 +135,7 @@ def get_thumbnail_image(img, width, height, **options):
         kwargs -- Options used in PIL thumbnail method
         
     Usage::
-        >>> try:
-        ...     from PIL import Image
-        ... except ImportError:
-        ...     import Image
+        >>> from thumbnailfield.compatibility import Image
         >>> img = Image.new('RGBA', (1000, 800))
         >>> thumb = get_thumbnail_image(img, 100, 100)
         >>> assert thumb.size[0] == 100

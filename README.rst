@@ -1,5 +1,41 @@
-django-thumbnailfield is a enhanced ImageField of Django
+django-thumbnailfield
+===============================================================================
+.. image:: https://secure.travis-ci.org/lambdalisue/django-thumbnailfield.png
+    :target: http://travis-ci.org/lambdalisue/django-thumbnailfield
+    :alt: Build status
 
+.. image:: https://coveralls.io/repos/lambdalisue/django-thumbnailfield/badge.png
+    :target: https://coveralls.io/r/lambdalisue/django-thumbnailfield/
+    :alt: Coverage
+
+.. image:: https://pypip.in/d/django-thumbnailfield/badge.png
+    :target: https://pypi.python.org/pypi/django-thumbnailfield/
+    :alt: Downloads
+
+.. image:: https://pypip.in/v/django-thumbnailfield/badge.png
+    :target: https://pypi.python.org/pypi/django-thumbnailfield/
+    :alt: Latest version
+
+.. image:: https://pypip.in/wheel/django-thumbnailfield/badge.png
+    :target: https://pypi.python.org/pypi/django-thumbnailfield/
+    :alt: Wheel Status
+
+.. image:: https://pypip.in/egg/django-thumbnailfield/badge.png
+    :target: https://pypi.python.org/pypi/django-thumbnailfield/
+    :alt: Egg Status
+
+.. image:: https://pypip.in/license/django-thumbnailfield/badge.png
+    :target: https://pypi.python.org/pypi/django-thumbnailfield/
+    :alt: License
+
+Author
+    Alisue <lambdalisue@hashnote.net>
+Supported python versions
+    2.6, 2.7, 3.2, 3.3
+Supported django versions
+    1.3 - 1.6
+
+django-thumbnailfield is a enhanced ImageField of Django.
 It has the follwing features
 
 -   Using Django storage system to store the image (Not like other Thumbnail library)
@@ -12,7 +48,7 @@ Install
 ===========================================
 ::
 
-	sudo pip install django-thumbnailfield
+    sudo pip install django-thumbnailfield
 
 
 Prepare to use
@@ -30,21 +66,21 @@ Example mini blog app
 =========================================
 
 ``models.py``::
-	
-	from django.db import models
-	from django.contrib.auth.models import User
+    
+    from django.db import models
+    from django.contrib.auth.models import User
 
     from thumbnailfield.fields import ThumbnailField
-	
-	class Entry(models.Model):
-		PUB_STATES = (
-			('public', 'public entry'),
-			('protected', 'login required'),
-			('private', 'secret entry'),
-		)
-		pub_state = models.CharField('publish status', choices=PUB_STATES)
-		title = models.CharField('title', max_length=140)
-		body = models.TextField('body')
+    
+    class Entry(models.Model):
+        PUB_STATES = (
+            ('public', 'public entry'),
+            ('protected', 'login required'),
+            ('private', 'secret entry'),
+        )
+        pub_state = models.CharField('publish status', choices=PUB_STATES)
+        title = models.CharField('title', max_length=140)
+        body = models.TextField('body')
 
         #
         # This is a usage of ThumbnailField.
@@ -88,36 +124,36 @@ Example mini blog app
                 #   entry.thumbnail.large.size  # as entry.thumbnail.large.size
                 #
             })
-		# ...
+        # ...
 
 ``entry_detail.html``::
 
-	<html>
-	<head>
-		<title>django-thumbnailfield example</title>
-	</head>
-	<body>
-	    <dl>
-	        <dt>Original</dt>
-	        <dd><img src="{{ MEDIA_URL }}{{ object.thumbnail }}"></dd>
-	        <dt>Thumbnail "large"</dt>
-	        <dd><img src="{{ MEDIA_URL }}{{ object.thumbnail.large }}"></dd>
-	        <dt>Thumbnail "small"</dt>
-	        <dd><img src="{{ MEDIA_URL }}{{ object.thumbnail.small }}"></dd>
-	        <dt>Thumbnail "tiny"</dt>
-	        <dd><img src="{{ MEDIA_URL }}{{ object.thumbnail.tiny }}"></dd>
-	    </dl>
-	</body>
-	</html>
+    <html>
+    <head>
+        <title>django-thumbnailfield example</title>
+    </head>
+    <body>
+        <dl>
+            <dt>Original</dt>
+            <dd><img src="{{ MEDIA_URL }}{{ object.thumbnail }}"></dd>
+            <dt>Thumbnail "large"</dt>
+            <dd><img src="{{ MEDIA_URL }}{{ object.thumbnail.large }}"></dd>
+            <dt>Thumbnail "small"</dt>
+            <dd><img src="{{ MEDIA_URL }}{{ object.thumbnail.small }}"></dd>
+            <dt>Thumbnail "tiny"</dt>
+            <dd><img src="{{ MEDIA_URL }}{{ object.thumbnail.tiny }}"></dd>
+        </dl>
+    </body>
+    </html>
 
 How to use custom process method
 ================================================================
 
 Create your own custom process method like below::
 
+    from django.core.exceptions import ImproperlyConfigured
     from thumbnailfield.process_methods import get_sepia_image
     from thumbnailfield.process_methods import get_cropped_image
-    from thumbnailfield.exceptions import ThumbnailFieldPatternImproperlyConfigured
 
     def get_sepia_and_cropped_image(img, width, height, **options):
         # do something with img
@@ -127,9 +163,9 @@ Create your own custom process method like below::
     def _sepia_and_cropped_error_check(f, img, width, height, **options):
         # do some error check
         if 'left' not in options:
-            raise ThumbnailFieldPatternImproperlyConfigured(f, "'left' is required")
+            raise ImproperlyConfigured(f, "'left' is required")
         if 'upper' not in options:
-            raise ThumbnailFieldPatternImproperlyConfigured(f, "'upper' is required")
+            raise ImproperlyConfigured(f, "'upper' is required")
     # Apply error check function
     # Error check is recommended if your process method required any options
     # otherwise just forget about this.
