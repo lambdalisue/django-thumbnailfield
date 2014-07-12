@@ -3,13 +3,18 @@
 """
 __author__ = 'Alisue <lambdalisue@hashnote.net>'
 import os
-import tempfile
 from django.test import TestCase
 from django.core.files.base import File
 from thumbnailfield.tests.models import Entry
+from thumbnailfield.compatibility import override_settings
+
 
 FILENAME = os.path.join(os.path.dirname(__file__), 'lambdalisue.bmp')
 
+
+@override_settings(
+    THUMBNAILFIELD_REMOVE_PREVIOUS=True,
+)
 class ThumbnailFieldTestCase(TestCase):
     def test_thumbnailfield_creation(self):
 

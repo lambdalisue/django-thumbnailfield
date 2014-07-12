@@ -21,3 +21,7 @@ except ImportError:
     except ImportError:
         from StringIO import StringIO
 
+try:
+    from django.test.utils import override_settings
+except ImportError:
+    from override_settings import override_settings
