@@ -14,11 +14,13 @@ class Entry(models.Model):
     # This is a usage of ThumbnailField.
     # You have to set ``patterns`` to generate thumbnails
     #
-    thumbnail = ThumbnailField('thumbnail', upload_to='img/thumbnails', null=True, blank=True, patterns={
+    thumbnail = ThumbnailField(
+        'thumbnail', upload_to='img/thumbnails', null=True, blank=True,
+        patterns={
             # Pattern Format:
             #   <Name>: (
-            #   (<square_size>,),       # with defautl process_method
-            #   (<width>, <height>,),   # with default process_method
+            # (<square_size>,),       # with defautl process_method
+            # (<width>, <height>,),   # with default process_method
             #   (<width>, <height>, <method or method_name>),
             #   (<width>, <height>, <method or method_name>, <method options>),
             #   )
@@ -26,8 +28,8 @@ class Entry(models.Model):
             # If Name is ``None`` that mean original image will be processed
             # with the pattern
             #
-            # Convert original image to sepia and resize it to 800x400 (original
-            # size is 804x762)
+            # Convert original image to sepia and resize it to 800x400 (
+            # original size is 804x762)
             None: ((None, None, 'sepia'), (800, 400, 'resize')),
             # Create 640x480 resized thumbnail as large.
             'large': ((640, 480, 'resize'),),
@@ -45,11 +47,11 @@ class Entry(models.Model):
             #   entry.thumbnail.small
             #   entry.thumbnail.tiny
             #
-            #   # shortcut properties
-            #   entry.thumbnail.large_file  # as entry.thumbnail.large.file
-            #   entry.thumbnail.large_path  # as entry.thumbnail.large.path
-            #   entry.thumbnail.large_url   # as entry.thumbnail.large.url
-            #   entry.thumbnail.large.size  # as entry.thumbnail.large.size
+            # shortcut properties
+            # entry.thumbnail.large_file  # as entry.thumbnail.large.file
+            # entry.thumbnail.large_path  # as entry.thumbnail.large.path
+            # entry.thumbnail.large_url   # as entry.thumbnail.large.url
+            # entry.thumbnail.large.size  # as entry.thumbnail.large.size
             #
         })
 

@@ -15,20 +15,25 @@ from thumbnailfield.utils import get_thumbnail_filename
 from thumbnailfield.utils import get_fileformat_from_filename
 from thumbnailfield.utils import get_processed_image
 from thumbnailfield.compatibility import Image
-    
+
+
 class ThumbnailFileDescriptor(ImageFileDescriptor):
+
     """
     Enhanced ImageFileDescriptor
-    
-    Just like the ImageFileDescriptor, but for ThumbnailField. The only difference is
-    removing previous Image and Thumbnails from storage when the value has changed.
+
+    Just like the ImageFileDescriptor, but for ThumbnailField. The only
+    difference is removing previous Image and Thumbnails from storage when the
+    value has changed.
     """
+
     def __set__(self, instance, value):
         if settings.THUMBNAILFIELD_REMOVE_PREVIOUS:
             previous_file = instance.__dict__.get(self.field.attname, None)
             if previous_file and isinstance(previous_file, ThumbnailFieldFile):
                 previous_files = [previous_file.path]
-                for thumbnail_filename in previous_file.iter_thumbnail_filenames():
+                iterator = previous_file.iter_thumbnail_filenames()
+                for thumbnail_filename in iterator:
                     previous_files.append(thumbnail_filename)
             super(ThumbnailFileDescriptor, self).__set__(instance, value)
             if previous_file and isinstance(previous_file, ThumbnailFieldFile):
@@ -39,7 +44,9 @@ class ThumbnailFileDescriptor(ImageFileDescriptor):
         else:
             super(ThumbnailFileDescriptor, self).__set__(instance, value)
 
+
 class ThumbnailFieldFile(ImageFieldFile):
+
     """Enhanced ImageFieldFile
 
     This FieldFile contains thumbnail ImageFieldFile instances
@@ -52,7 +59,8 @@ class ThumbnailFieldFile(ImageFieldFile):
         _get_thumbnail_file -- get ImageFieldFile instance of thumbnail
         _create_thumbnail -- create PIL image instance of thumbnail
         _create_thumbnail_file -- create ImageFieldFile instance of thumbnail
-        _update_thumbnail_file -- update thumbnail file and return ImageFieldFile instance
+        _update_thumbnail_file -- update thumbnail file and return
+                                  ImageFieldFile instance
         _remove_thumbnail_file -- remove thumbanil file from storage
         iter_pattern_name -- return iterator of pattern name
         get_pattern_name -- return list of pattern name
@@ -77,27 +85,31 @@ class ThumbnailFieldFile(ImageFieldFile):
                 continue
             fget = lambda self, name = name: self._get_thumbnail_file(name)
             setattr(ThumbnailFieldFile, name, property(fget=fget))
-            fget = lambda self, name = name: self._get_thumbnail_file(name).file
+            fget = lambda self, name = name: self._get_thumbnail_file(
+                name).file
             setattr(ThumbnailFieldFile, '%s_file' % name, property(fget=fget))
-            fget = lambda self, name = name: self._get_thumbnail_file(name).path
+            fget = lambda self, name = name: self._get_thumbnail_file(
+                name).path
             setattr(ThumbnailFieldFile, '%s_path' % name, property(fget=fget))
             fget = lambda self, name = name: self._get_thumbnail_file(name).url
             setattr(ThumbnailFieldFile, '%s_url' % name, property(fget=fget))
-            fget = lambda self, name = name: self._get_thumbnail_file(name).size
+            fget = lambda self, name = name: self._get_thumbnail_file(
+                name).size
             setattr(ThumbnailFieldFile, '%s_size' % name, property(fget=fget))
 
     def _get_thumbnail_filename(self, name):
         """get thumbnail filename with name
-        
-        thumbnail filename is generated with utils.get_thumbnail_filename method.
-        original path is path of this field file
+
+        thumbnail filename is generated with utils.get_thumbnail_filename
+        method. original path is path of this field file
         """
         return get_thumbnail_filename(self.name, name)
 
     def _get_image(self, force=False):
         """get PIL image of this field file
-        
-        PIL Image instance is cached in '_image_cache' attribute of this instance
+
+        PIL Image instance is cached in '_image_cache' attribute of this
+        instance
 
         Attribute:
             force -- used to force reload the PIL image instance from storage
@@ -113,9 +125,10 @@ class ThumbnailFieldFile(ImageFieldFile):
 
     def _get_thumbnail(self, name, force=False):
         """get PIL thumbnail of this field file
-        
-        PIL Image instance of thumbnail is cached in '_image_<name>_cache' attribute
-        of this instance. The instance is created by '_create_thumbnail' method with
+
+        PIL Image instance of thumbnail is cached in '_image_<name>_cache'
+        attribute of this instance. The instance is created by
+        '_create_thumbnail' method with
         given named patterns
 
         Attribute:
@@ -130,14 +143,15 @@ class ThumbnailFieldFile(ImageFieldFile):
 
     def _get_thumbnail_file(self, name, force=False):
         """get ImageFieldFile of thumbnail
-        
-        ImageFieldFile instance is cached in '_thumbnail_file_<name>_cache' attribute
-        of this instance. The instance is created by '_create_thumbnail_file' method with
-        given named patterns
+
+        ImageFieldFile instance is cached in '_thumbnail_file_<name>_cache'
+        attribute of this instance. The instance is created by
+        '_create_thumbnail_file' method with given named patterns
 
         Attribute:
             name -- A name of thumbnail patterns
-            force -- used to force recreate the ImageFieldFile instance from PIL instance
+            force -- used to force recreate the ImageFieldFile instance from
+            PIL instance
         """
         attr_name = '_thumbnail_file_%s_cache' % name
         if force or not getattr(self, attr_name, None):
@@ -149,7 +163,7 @@ class ThumbnailFieldFile(ImageFieldFile):
 
     def _create_thumbnail(self, patterns):
         """create PIL thumbnail of this field file
-        
+
         Attribute:
             patterns -- A process patterns to generate thumbnail
         """
@@ -161,22 +175,25 @@ class ThumbnailFieldFile(ImageFieldFile):
 
     def _create_thumbnail_file(self, name, force=False):
         """create thumbnail file and return ImageFieldFile
-        
+
         Attribute:
             name -- A name of thumbnail patterns
-            force -- used to force recreate PIL image instance from original image
+            force -- used to force recreate PIL image instance from original
+            image
         """
         thumbs = self._get_thumbnail(name, force)
         if thumbs:
             thumbs_filename = self._get_thumbnail_filename(name)
-            save_to_storage(thumbs, self.storage, thumbs_filename, overwrite=True)
-            thumbs_file = ImageFieldFile(self.instance, self.field, thumbs_filename)
+            save_to_storage(
+                thumbs, self.storage, thumbs_filename, overwrite=True)
+            thumbs_file = ImageFieldFile(
+                self.instance, self.field, thumbs_filename)
             return thumbs_file
         return None
 
     def _update_thumbnail_file(self, name):
         """update thumbnail file of storage
-        
+
         Attribute:
             name -- A name of thumbnail patterns
         """
@@ -184,7 +201,7 @@ class ThumbnailFieldFile(ImageFieldFile):
 
     def _remove_thumbnail_file(self, name, save=True):
         """remove thumbnail file from storage
-        
+
         Attribute:
             name -- A name of thumbnail patterns
             save -- If true, the model instance of this field will be saved
@@ -194,7 +211,7 @@ class ThumbnailFieldFile(ImageFieldFile):
         if thumbs_file:
             thumbs_file.delete(save)
             delattr(self, attr_name)
-    
+
     def iter_pattern_names(self):
         """return iterator of thumbnail pattern names"""
         return self.patterns.iterkeys()
@@ -266,8 +283,8 @@ class ThumbnailField(ImageField):
     descriptor_class = ThumbnailFileDescriptor
     description = _("Thumbnail")
 
-    def __init__(self, verbose_name=None, name=None, width_field=None, 
-            height_field=None, patterns=None, **kwargs):
+    def __init__(self, verbose_name=None, name=None, width_field=None,
+                 height_field=None, patterns=None, **kwargs):
         """Constructor
 
         Patterns:
@@ -276,38 +293,43 @@ class ThumbnailField(ImageField):
 
                 patterns = {
                     <Name>: (
-                        (<square_size>),        # with default process_method with square size
-                        (<width>, <height>),    # with default process_method with width/height
-                        (<width>, <height>, <method_name>), 
-                        (<width>, <height>, <method_name>, <method_options>), 
+                        (<square_size>),        # with default process_method
+                                                # with square size
+                        (<width>, <height>),    # with default process_method
+                                                # with width/height
+                        (<width>, <height>, <method_name>),
+                        (<width>, <height>, <method_name>, <method_options>),
                     ),
                     <Name>: (
-                        (<width>, <height>, <method_name>, <method_options>), 
-                        (<width>, <height>, <method_name>, <method_options>), 
-                        (<width>, <height>, <method_name>, <method_options>), 
+                        (<width>, <height>, <method_name>, <method_options>),
+                        (<width>, <height>, <method_name>, <method_options>),
+                        (<width>, <height>, <method_name>, <method_options>),
                     ),
                 }
 
             ``Name`` is a name of thumbnail. ``None`` or '' for original image.
 
-            ``width`` and ``height`` is used in process method. Some process method
+            ``width`` and ``height`` is used in process method. Some process
+            method
             have to be set this value ``None``
 
-            ``method_name`` is a name of method or process_method. You can use a
-            string name registered in settings.THUMBNAILFIELD_PROCESS_METHOD_TABLE
+            ``method_name`` is a name of method or process_method. You can use
+            a string name registered in
+            settings.THUMBNAILFIELD_PROCESS_METHOD_TABLE
 
-            ``method_options`` is a dictionary instance used in particular method.
-            for example, ``crop`` method required ``left`` and ``upper`` options to
-            process.
+            ``method_options`` is a dictionary instance used in particular
+            method.  for example, ``crop`` method required ``left`` and
+            ``upper`` options to process.
         """
         patterns = patterns or []
         if '' in patterns:
             patterns[None] = patterns['']
             del patterns['']
         self.patterns = patterns
-        super(ThumbnailField, self).__init__(verbose_name, name, width_field, height_field, **kwargs) 
+        super(ThumbnailField, self).__init__(
+            verbose_name, name, width_field, height_field, **kwargs)
 
-try:        
+try:
     from south.modelsinspector import add_introspection_rules
     rules = [
         (

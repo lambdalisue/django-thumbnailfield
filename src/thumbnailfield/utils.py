@@ -9,6 +9,7 @@ from django.core.files.base import ContentFile
 from thumbnailfield.conf import settings
 from thumbnailfield.compatibility import StringIO
 
+
 def get_content_file(img, file_fmt, **kwargs):
     """get ContentFile from PIL image instance with file_fmt
 
@@ -24,10 +25,11 @@ def get_content_file(img, file_fmt, **kwargs):
         >>> cf = get_content_file(img, 'PNG')
         >>> assert isinstance(cf, ContentFile)
     """
-    
+
     file_obj = StringIO()
     img.save(file_obj, format=file_fmt, **kwargs)
     return ContentFile(file_obj.getvalue())
+
 
 def save_to_storage(img, storage, filename, overwrite=False, **kwargs):
     """save PIL image instance to Django storage with filename
@@ -65,13 +67,15 @@ def save_to_storage(img, storage, filename, overwrite=False, **kwargs):
         storage.delete(filename)
     return storage.save(filename, content_file)
 
+
 def get_thumbnail_filename(path, name, pattern=None):
     """get thumbnail filename with name and pattern
-    
+
     Attributes:
         path -- original path
         name -- thumbnail name
-        pattern -- file name generation pattern (default = settings.THUMBNAILFIELD_FILENAME_PATTERN)
+        pattern -- file name generation pattern (default =
+                   settings.THUMBNAILFIELD_FILENAME_PATTERN)
 
     Usage::
         >>> path = "/some/where/test.png"
@@ -81,19 +85,20 @@ def get_thumbnail_filename(path, name, pattern=None):
         >>> assert thumb_filename == "/some/where/test.small.png"
     """
     pattern = pattern or settings.THUMBNAILFIELD_FILENAME_PATTERN
-    root, filename = path.rsplit('/', 1)
+    root, filename = os.path.split(path)
     filename, ext = os.path.splitext(filename)
     path = pattern % {
-            'root': root,
-            'filename': filename,
-            'name': name,
-            'ext': ext[1:],
-        }
+        'root': root,
+        'filename': filename,
+        'name': name,
+        'ext': ext[1:],
+    }
     return path
+
 
 def get_fileformat_from_filename(filename):
     """get fileformat from filename
-    
+
     Attributes:
         filename -- filename used to guess fileformat
 
@@ -107,25 +112,26 @@ def get_fileformat_from_filename(filename):
         >>> assert get_fileformat_from_filename("test.tiff") == "TIFF"
         >>> assert get_fileformat_from_filename("test.bmp") == "BMP"
         >>> assert get_fileformat_from_filename("test.dib") == "BMP"
-        >>> assert get_fileformat_from_filename("/some/where/test.png") == "PNG"
+        >>> assert get_fileformat_from_filename(
+        ...     "/some/where/test.png") == "PNG"
     """
     patterns = (
-            (['.png'], 'PNG'),
-            (['.jpg', '.jpe', '.jpeg'], 'JPEG'),
-            (['.gif'], 'GIF'),
-            (['.tif', '.tiff'], 'TIFF'),
-            (['.bmp', '.dib'], 'BMP'),
-            (['.dcx'], 'DCX'),
-            (['.eps', 'ps'], 'EPS'),
-            (['.im'], 'IM'),
-            (['.pcd'], 'PCD'),
-            (['.pcx'], 'PCX'),
-            (['.pdf'], 'PDF'),
-            (['.pbm', '.pgm', '.ppm'], 'PPM'),
-            (['.psd'], 'PSD'),
-            (['.xbm'], 'XBM'),
-            (['.xpm'], 'XPM')
-        )
+        (['.png'], 'PNG'),
+        (['.jpg', '.jpe', '.jpeg'], 'JPEG'),
+        (['.gif'], 'GIF'),
+        (['.tif', '.tiff'], 'TIFF'),
+        (['.bmp', '.dib'], 'BMP'),
+        (['.dcx'], 'DCX'),
+        (['.eps', 'ps'], 'EPS'),
+        (['.im'], 'IM'),
+        (['.pcd'], 'PCD'),
+        (['.pcx'], 'PCX'),
+        (['.pdf'], 'PDF'),
+        (['.pbm', '.pgm', '.ppm'], 'PPM'),
+        (['.psd'], 'PSD'),
+        (['.xbm'], 'XBM'),
+        (['.xpm'], 'XPM')
+    )
     if '.' not in filename:
         return None
     ext = os.path.splitext(filename)[1]
@@ -133,6 +139,7 @@ def get_fileformat_from_filename(filename):
         if ext in pattern[0]:
             return pattern[1]
     return None
+
 
 def _split_pattern(pattern):
     process_method = None
@@ -145,12 +152,14 @@ def _split_pattern(pattern):
         width, height, process_method = pattern
     elif len(pattern) == 4:
         width, height, process_method, process_options = pattern
-    process_method = process_method or settings.THUMBNAILFIELD_DEFAULT_PROCESS_METHOD
+    process_method = (
+        process_method or settings.THUMBNAILFIELD_DEFAULT_PROCESS_METHOD)
     return width, height, process_method, process_options
+
 
 def get_processed_image(f, img, patterns):
     """process PIL image with pattern attribute
-    
+
     Attributes:
         f -- ThumbnailFieldFile instance
         img -- PIL Image instance
@@ -158,16 +167,19 @@ def get_processed_image(f, img, patterns):
 
     pattern format is shown below::
 
-        # Use default process_method with default process options and same width, height
+        # Use default process_method with default process options and same
+        # width, height
         pattern = [square_size]
-        # Use default process_method with default process options and width, height
+        # Use default process_method with default process options and width,
+        # height
         pattern = [width, height]
         # Use process_method with default process options and width, height
         pattern = [width, height, process_method]
         # Use process_method with process_options with widht, height
         pattern = [width, height, process_method, process_options]
 
-    default process_method and process_options are configured in settings.py as::
+    default process_method and process_options are configured in settings.py
+    as::
 
         THUMBNAILFIELD_DEFAULT_PROCESS_METHOD = 'thumbnail'
         THUMBNAILFIELD_DEFAULT_PROCESS_OPTIONS = {'filter': Image.ANTIALIAS}
@@ -176,15 +188,19 @@ def get_processed_image(f, img, patterns):
     if not isinstance(patterns[0], (list, tuple)):
         patterns = [patterns]
     for pattern in patterns:
-        width, height, process_method, process_options = _split_pattern(pattern)
+        width, height, process_method, process_options = _split_pattern(
+            pattern)
         process_method_table = settings.THUMBNAILFIELD_PROCESS_METHOD_TABLE
         for method_name, method in process_method_table.iteritems():
             if process_method == method_name:
                 if getattr(method, 'error_check', None):
-                    method.error_check(f, img, width, height, **process_options)
+                    method.error_check(
+                        f, img, width, height, **process_options)
                 process_method = method
                 break
         if not callable(process_method):
-            raise AttributeError('process_method have to be a string name defined in THUMBNAILFIELD_PROCESS_METHOD_TABLE or method.')
+            raise AttributeError(
+                'process_method have to be a string name defined in '
+                'THUMBNAILFIELD_PROCESS_METHOD_TABLE or method.')
         processed = process_method(processed, width, height, **process_options)
     return processed

@@ -17,7 +17,8 @@ class ThumbnailFieldTestCase(TestCase):
         entry = Entry.objects.create(title='foo', body='bar', thumbnail=f)
 
         def thumbnail_test(name, width, height):
-            path = os.path.realpath(entry.thumbnail._get_thumbnail_filename(name)) 
+            path = os.path.realpath(
+                entry.thumbnail._get_thumbnail_filename(name))
             # the file does not exists while it has not accessed yet
             self.assert_(not os.path.exists(path))
             thumbnail = getattr(entry.thumbnail, name)
@@ -43,7 +44,8 @@ class ThumbnailFieldTestCase(TestCase):
         entry.save()
 
         def thumbnail_test(name, width, height):
-            path = os.path.realpath(entry.thumbnail._get_thumbnail_filename(name)) 
+            path = os.path.realpath(
+                entry.thumbnail._get_thumbnail_filename(name))
             # the file does not exists while it has not accessed yet
             self.assert_(not os.path.exists(path))
             thumbnail = getattr(entry.thumbnail, name)

@@ -9,13 +9,13 @@ from thumbnailfield.compatibility import ImageOps
 
 def get_grayscale_image(img, width, height, **options):
     """get grayscale image
-    
+
     Attribute:
         img -- PIL image instance
         width -- width of thumbnail
         height -- height of thumbnail
         kwargs -- Options used in PIL thumbnail method
-        
+
     Usage::
         >>> from thumbnailfield.compatibility import Image
         >>> img = Image.new('RGBA', (1000, 800))
@@ -25,6 +25,8 @@ def get_grayscale_image(img, width, height, **options):
     if img.mode != 'L':
         grayscale = grayscale.convert('L')
     return grayscale
+
+
 def _grayscale_error_check(f, img, width, height, **options):
     # grayscale pattern doesn't require width/height
     if width is not None or height is not None:
@@ -32,15 +34,16 @@ def _grayscale_error_check(f, img, width, height, **options):
                                       "'grayscale' pattern")
 get_grayscale_image.error_check = _grayscale_error_check
 
+
 def get_sepia_image(img, width, height, **options):
     """get sepia image
-    
+
     Attribute:
         img -- PIL image instance
         width -- width of thumbnail
         height -- height of thumbnail
         kwargs -- Options used in PIL thumbnail method
-        
+
     Usage::
         >>> from thumbnailfield.compatibility import Image
         >>> img = Image.new('RGBA', (1000, 800))
@@ -51,7 +54,7 @@ def get_sepia_image(img, width, height, **options):
         ramp = []
         r, g, b = white
         for i in range(255):
-            ramp.extend((r*i/255, g*i/255, b*i/255))
+            ramp.extend((r * i / 255, g * i / 255, b * i / 255))
         return ramp
     sepia = make_linear_ramp((255, 240, 192))
 
@@ -68,15 +71,19 @@ def get_sepia_image(img, width, height, **options):
     # convert back to RGB so we can save it as JPEG
     # (alternatively, save it in PNG or similar)
     return grayscale.convert("RGB")
+
+
 def _sepia_error_check(f, img, width, height, **options):
     # sepia pattern doesn't require width/height
     if width is not None or height is not None:
-        raise ThumbnailFieldPatternImproperlyConfigured(f, "'width' and 'height' must be None in 'sepia' pattern")
+        raise ImproperlyConfigured(
+            f, "'width' and 'height' must be None in 'sepia' pattern")
 get_sepia_image.error_check = _sepia_error_check
+
 
 def get_cropped_image(img, width, height, left, upper, **options):
     """get cropped image
-    
+
     Attribute:
         img -- PIL image instance
         width -- width of thumbnail
@@ -84,7 +91,7 @@ def get_cropped_image(img, width, height, left, upper, **options):
         left -- left point of thumbnail
         upper -- upper point of thumbnail
         kwargs -- Options used in PIL thumbnail method
-        
+
     Usage::
         >>> from thumbnailfield.compatibility import Image
         >>> img = Image.new('RGBA', (1000, 800))
@@ -96,6 +103,8 @@ def get_cropped_image(img, width, height, left, upper, **options):
     lower = upper + height
     thumbs = img.crop((left, upper, right, lower))
     return thumbs
+
+
 def _cropped_error_check(f, img, width, height, **options):
     # crop pattern required left/upper options
     if 'left' not in options:
@@ -104,15 +113,16 @@ def _cropped_error_check(f, img, width, height, **options):
         raise ImproperlyConfigured(f, "'crop' pattern required 'upper' option")
 get_cropped_image.error_check = _cropped_error_check
 
+
 def get_resized_image(img, width, height, force=False, **options):
     """get resized image
-    
+
     Attribute:
         img -- PIL image instance
         width -- width of thumbnail
         height -- height of thumbnail
         kwargs -- Options used in PIL thumbnail method
-        
+
     Usage::
         >>> from thumbnailfield.compatibility import Image
         >>> img = Image.new('RGBA', (1000, 800))
@@ -125,15 +135,16 @@ def get_resized_image(img, width, height, force=False, **options):
         thumbs = img.resize(size=(width, height), **options)
     return thumbs
 
+
 def get_thumbnail_image(img, width, height, **options):
     """get thumbnail image
-    
+
     Attribute:
         img -- PIL image instance
         width -- width of thumbnail
         height -- height of thumbnail
         kwargs -- Options used in PIL thumbnail method
-        
+
     Usage::
         >>> from thumbnailfield.compatibility import Image
         >>> img = Image.new('RGBA', (1000, 800))
