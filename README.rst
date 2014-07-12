@@ -200,7 +200,7 @@ Settings
     Remove previous files (include original file) when new file is applied to
     the ThumbnailField.
 
-    Default: ``True``
+    Default: ``False``
 
 ``THUMBNAILFIELD_DEFAULT_PROCESS_METHOD``
     Used when no process_method is applied in process pattern.
