@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 
 NAME = 'django-thumbnailfield'
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 
 def read(filename):
     BASE_DIR = os.path.dirname(__file__)
