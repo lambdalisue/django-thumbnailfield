@@ -31,9 +31,9 @@ django-thumbnailfield
 Author
     Alisue <lambdalisue@hashnote.net>
 Supported python versions
-    2.6, 2.7, 3.2, 3.3
+    2.6, 2.7, 3.2, 3.3, 3.4
 Supported django versions
-    1.3 - 1.6
+    1.3 - 1.6 and 1.7c1
 
 django-thumbnailfield is a enhanced ImageField of Django.
 It has the follwing features
