@@ -6,11 +6,13 @@ from setuptools import setup, find_packages
 NAME = 'django-thumbnailfield'
 VERSION = '0.2.1'
 
+
 def read(filename):
     BASE_DIR = os.path.dirname(__file__)
     filename = os.path.join(BASE_DIR, filename)
     with open(filename, 'r') as fi:
         return fi.read()
+
 
 def readlist(filename):
     rows = read(filename).split("\n")
@@ -27,10 +29,10 @@ if sys.version_info >= (3, 0):
     )
 
 setup(
-    name = NAME,
-    version = VERSION,
-    description = ("Enhanced ImageField with automatically generate thumbnail "
-                   "of the specified image"),
+    name=NAME,
+    version=VERSION,
+    description=("Enhanced ImageField with automatically generate thumbnail "
+                 "of the specified image"),
     long_description = read('README.rst'),
     classifiers = (
         'Development Status :: 3 - Alpha',
