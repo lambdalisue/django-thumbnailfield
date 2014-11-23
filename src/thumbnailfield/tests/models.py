@@ -53,6 +53,7 @@ class Entry(models.Model):
             # entry.thumbnail.large_url   # as entry.thumbnail.large.url
             # entry.thumbnail.large.size  # as entry.thumbnail.large.size
             #
+            'nothing': None,
         })
 
     class Meta:

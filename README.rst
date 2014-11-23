@@ -194,6 +194,15 @@ Or define the method in THUMBNAILFIELD_PROCESS_METHOD_TABLE and use as a string 
         }
     # ...
 
+If ``None`` is specified, that mean do nothing.
+
+    # models.py
+    # ...
+    thumbnail = ThumbnailField('thumbnail', upload_to='thumbnails', patterns = {
+            'original': None,
+        }
+    # ...
+
 Settings
 =========================================
 ``THUMBNAILFIELD_REMOVE_PREVIOUS``

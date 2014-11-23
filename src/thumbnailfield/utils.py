@@ -184,8 +184,10 @@ def get_processed_image(f, img, patterns):
         THUMBNAILFIELD_DEFAULT_PROCESS_METHOD = 'thumbnail'
         THUMBNAILFIELD_DEFAULT_PROCESS_OPTIONS = {'filter': Image.ANTIALIAS}
     """
+    if patterns is None:
+        return img
     processed = img.copy()
-    if not isinstance(patterns[0], (list, tuple)):
+    if len(patterns) > 0 and not isinstance(patterns[0], (list, tuple)):
         patterns = [patterns]
     for pattern in patterns:
         width, height, process_method, process_options = _split_pattern(

@@ -321,10 +321,11 @@ class ThumbnailField(ImageField):
             method.  for example, ``crop`` method required ``left`` and
             ``upper`` options to process.
         """
-        patterns = patterns or []
+        patterns = patterns or {}
         if '' in patterns:
             patterns[None] = patterns['']
             del patterns['']
+        patterns[None] = patterns.get(None, None)
         self.patterns = patterns
         super(ThumbnailField, self).__init__(
             verbose_name, name, width_field, height_field, **kwargs)
