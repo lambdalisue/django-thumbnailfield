@@ -240,15 +240,15 @@ class ThumbnailFieldFile(ImageFieldFile):
         """return list of thumbnail files"""
         thumbnail_files = [f for f in self.iter_thumbnail_files()]
         return thumbnail_files
-            
+
     def update_thumbnail_files(self):
         """update thumbanil files of storage"""
         for name in self.iter_pattern_names():
             self._update_thumbnail_file(name)
-    
+
     def remove_thumbnail_files(self, save=True):
         """remove thumbnail files from storage
-        
+
         Attribute:
             save -- If true, the model instance of this field will be saved.
         """
@@ -269,6 +269,7 @@ class ThumbnailFieldFile(ImageFieldFile):
     def delete(self, save=True):
         self.remove_thumbnail_files(save=False)
         super(ThumbnailFieldFile, self).delete(save=save)
+
 
 class ThumbnailField(ImageField):
     """Enhanced ImageField
