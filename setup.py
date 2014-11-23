@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 
 NAME = 'django-thumbnailfield'
-VERSION = '0.2.2'
+VERSION = '0.2.3'
 
 
 def read(filename):
