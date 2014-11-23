@@ -32,10 +32,12 @@ class ThumbnailFileDescriptor(ImageFileDescriptor):
             previous_file = instance.__dict__.get(self.field.attname, None)
             if previous_file and isinstance(previous_file, ThumbnailFieldFile):
                 previous_files = [previous_file.path]
+                # Add thumbnail files
                 iterator = previous_file.iter_thumbnail_filenames()
                 for thumbnail_filename in iterator:
                     previous_files.append(thumbnail_filename)
             super(ThumbnailFileDescriptor, self).__set__(instance, value)
+            # remove previous files if the vaue has changed
             if previous_file and isinstance(previous_file, ThumbnailFieldFile):
                 current_file = getattr(instance, self.field.attname)
                 if previous_file != current_file:
@@ -105,22 +107,16 @@ class ThumbnailFieldFile(ImageFieldFile):
         """
         return get_thumbnail_filename(self.name, name)
 
-    def _get_image(self, force=False):
+    def _get_image(self):
         """get PIL image of this field file
 
         PIL Image instance is cached in '_image_cache' attribute of this
         instance
-
-        Attribute:
-            force -- used to force reload the PIL image instance from storage
         """
         attr_name = '_image_cache'
-        if force or not getattr(self, attr_name, None):
-            if self:
-                self.seek(0)
-                setattr(self, attr_name, Image.open(self.file))
-            else:
-                return None
+        if not getattr(self, attr_name, None):
+            self.seek(0)
+            setattr(self, attr_name, Image.open(self.file))
         return getattr(self, attr_name)
 
     def _get_thumbnail(self, name, force=False):
@@ -133,32 +129,11 @@ class ThumbnailFieldFile(ImageFieldFile):
 
         Attribute:
             name -- A name of thumbnail patterns
-            force -- used to force recreate the PIL Image instace from storage
         """
         attr_name = '_image_%s_cache' % name
         if force or not getattr(self, attr_name, None):
             patterns = self.patterns[name]
             setattr(self, attr_name, self._create_thumbnail(patterns))
-        return getattr(self, attr_name)
-
-    def _get_thumbnail_file(self, name, force=False):
-        """get ImageFieldFile of thumbnail
-
-        ImageFieldFile instance is cached in '_thumbnail_file_<name>_cache'
-        attribute of this instance. The instance is created by
-        '_create_thumbnail_file' method with given named patterns
-
-        Attribute:
-            name -- A name of thumbnail patterns
-            force -- used to force recreate the ImageFieldFile instance from
-            PIL instance
-        """
-        attr_name = '_thumbnail_file_%s_cache' % name
-        if force or not getattr(self, attr_name, None):
-            thumbs_file = self._create_thumbnail_file(name, force)
-            if not thumbs_file:
-                return None
-            setattr(self, attr_name, thumbs_file)
         return getattr(self, attr_name)
 
     def _create_thumbnail(self, patterns):
@@ -173,23 +148,41 @@ class ThumbnailFieldFile(ImageFieldFile):
             return thumb
         return None
 
-    def _create_thumbnail_file(self, name, force=False):
-        """create thumbnail file and return ImageFieldFile
+    def _get_thumbnail_file(self, name, force=False):
+        """get ImageFieldFile of thumbnail
+
+        ImageFieldFile instance is cached in '_thumbnail_file_<name>_cache'
+        attribute of this instance. The instance is created by
+        '_create_thumbnail_file' method with given named patterns
 
         Attribute:
             name -- A name of thumbnail patterns
-            force -- used to force recreate PIL image instance from original
-            image
         """
-        thumbs = self._get_thumbnail(name, force)
-        if thumbs:
+        attr_name = '_thumbnail_file_%s_cache' % name
+        if force or not getattr(self, attr_name, None):
+            thumbs_file = self._get_or_create_thumbnail_file(name, force)
+            if not thumbs_file:
+                return None
+            setattr(self, attr_name, thumbs_file)
+        return getattr(self, attr_name)
+
+    def _get_or_create_thumbnail_file(self, name, force=False):
+        """get or create thumbnail file and return ImageFieldFile
+
+        Attribute:
+            name -- A name of thumbnail patterns
+        """
+        thumbs_filename = self._get_thumbnail_filename(name)
+        if force or not self.storage.exists(thumbs_filename):
+            thumbs = self._get_thumbnail(name, force)
+            if not thumbs:
+                return None
             thumbs_filename = self._get_thumbnail_filename(name)
-            save_to_storage(
-                thumbs, self.storage, thumbs_filename, overwrite=True)
-            thumbs_file = ImageFieldFile(
-                self.instance, self.field, thumbs_filename)
-            return thumbs_file
-        return None
+            save_to_storage(thumbs, self.storage, thumbs_filename)
+        thumbs_file = ImageFieldFile(self.instance,
+                                     self.field,
+                                     thumbs_filename)
+        return thumbs_file
 
     def _update_thumbnail_file(self, name):
         """update thumbnail file of storage
@@ -260,8 +253,7 @@ class ThumbnailFieldFile(ImageFieldFile):
     def save(self, name, content, save=True):
         if self and not self._committed and None in self.patterns:
             # Apply original image process
-            img = self._get_image()
-            processed = get_processed_image(self, img, self.patterns[None])
+            processed = self._get_thumbnail(None)
             file_fmt = get_fileformat_from_filename(name)
             content = get_content_file(processed, file_fmt)
         super(ThumbnailFieldFile, self).save(name, content, save=save)

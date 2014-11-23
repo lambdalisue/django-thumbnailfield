@@ -184,6 +184,7 @@ def get_processed_image(f, img, patterns):
         THUMBNAILFIELD_DEFAULT_PROCESS_METHOD = 'thumbnail'
         THUMBNAILFIELD_DEFAULT_PROCESS_OPTIONS = {'filter': Image.ANTIALIAS}
     """
+    process_method_table = settings.THUMBNAILFIELD_PROCESS_METHOD_TABLE
     if patterns is None:
         return img
     processed = img.copy()
@@ -192,7 +193,6 @@ def get_processed_image(f, img, patterns):
     for pattern in patterns:
         width, height, process_method, process_options = _split_pattern(
             pattern)
-        process_method_table = settings.THUMBNAILFIELD_PROCESS_METHOD_TABLE
         for method_name, method in process_method_table.iteritems():
             if process_method == method_name:
                 if getattr(method, 'error_check', None):
