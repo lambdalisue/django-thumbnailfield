@@ -9,7 +9,7 @@ from thumbnailfield.tests.models import Entry
 from thumbnailfield.compatibility import override_settings
 
 
-FILENAME = os.path.join(os.path.dirname(__file__), 'lambdalisue.bmp')
+FILENAME = os.path.join(os.path.dirname(__file__), 'data', 'lambdalisue.bmp')
 
 
 @override_settings(

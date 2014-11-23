@@ -2,4 +2,4 @@ include README.rst
 include requirements.txt
 include requirements-test.txt
 include requirements-docs.txt
-include thumbnailfield/tests/lambdalisue.bmp
+include thumbnailfield/tests/data/lambdalisue.bmp
