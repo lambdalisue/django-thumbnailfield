@@ -134,7 +134,7 @@ def get_fileformat_from_filename(filename):
     )
     if '.' not in filename:
         return None
-    ext = os.path.splitext(filename)[1]
+    ext = os.path.splitext(filename)[1].lower()
     for pattern in patterns:
         if ext in pattern[0]:
             return pattern[1]
