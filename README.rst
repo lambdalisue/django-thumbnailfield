@@ -86,7 +86,13 @@ Example mini blog app
         # This is a usage of ThumbnailField.
         # You have to set ``patterns`` to generate thumbnails
         #
-        thumbnail = ThumbnailField(_('thumbnail'), upload_to='img/thumbnails', null=True, blank=True, patterns={
+        thumbnail = ThumbnailField(_('thumbnail'), upload_to='img/thumbnails', null=True, blank=True,
+            pil_save_options={
+                # Options of PIL Image.save() method.
+                # e.g. quality control
+                'quality': 100,
+            },
+            patterns={
                 # Pattern Format:
                 #   <Name>: (
                 #   (<square_size>,),       # with defautl process_method
@@ -237,3 +243,8 @@ Settings
     as default.
 
     Default: See ``thumbnailfield.__init__.DEFAULT_PROCESS_METHOD_TABLE``
+
+``THUMBNAILFIELD_DEFAULT_PIL_SAVE_OPTIONS``
+    Options used in PIL image save method.
+
+    Default: ``{}``

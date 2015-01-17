@@ -16,6 +16,11 @@ class Entry(models.Model):
     #
     thumbnail = ThumbnailField(
         'thumbnail', upload_to='img/thumbnails', null=True, blank=True,
+        pil_save_options={
+            # Options of PIL Image.save() method.
+            # e.g. quality control
+            'quality': 5,
+        },
         patterns={
             # Pattern Format:
             #   <Name>: (

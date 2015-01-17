@@ -24,3 +24,5 @@ class ThumbnailFieldConf(AppConf):
     DEFAULT_PROCESS_OPTIONS = {'resample': Image.ANTIALIAS}
     FILENAME_PATTERN = r'%(root)s/%(filename)s.%(name)s.%(ext)s'
     PROCESS_METHOD_TABLE = DEFAULT_PROCESS_METHOD_TABLE
+
+    DEFAULT_PIL_SAVE_OPTIONS = {}

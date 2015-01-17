@@ -79,6 +79,7 @@ class ThumbnailFieldFile(ImageFieldFile):
         """Constructor"""
         super(ThumbnailFieldFile, self).__init__(*args, **kwargs)
         self.patterns = self.field.patterns
+        self.pil_save_options = self.field.pil_save_options
 
         # create access properties
         for name in self.patterns.iterkeys():
@@ -160,13 +161,15 @@ class ThumbnailFieldFile(ImageFieldFile):
         """
         attr_name = '_thumbnail_file_%s_cache' % name
         if force or not getattr(self, attr_name, None):
-            thumbs_file = self._get_or_create_thumbnail_file(name, force)
+            thumbs_file = self._get_or_create_thumbnail_file(
+                name, force, self.pil_save_options)
             if not thumbs_file:
                 return None
             setattr(self, attr_name, thumbs_file)
         return getattr(self, attr_name)
 
-    def _get_or_create_thumbnail_file(self, name, force=False):
+    def _get_or_create_thumbnail_file(self, name, force=False,
+                                      pil_save_options=None):
         """get or create thumbnail file and return ImageFieldFile
 
         Attribute:
@@ -178,7 +181,8 @@ class ThumbnailFieldFile(ImageFieldFile):
             if not thumbs:
                 return None
             thumbs_filename = self._get_thumbnail_filename(name)
-            save_to_storage(thumbs, self.storage, thumbs_filename)
+            save_to_storage(thumbs, self.storage,
+                            thumbs_filename, **(pil_save_options or {}))
         thumbs_file = ImageFieldFile(self.instance,
                                      self.field,
                                      thumbs_filename)
@@ -277,7 +281,8 @@ class ThumbnailField(ImageField):
     description = _("Thumbnail")
 
     def __init__(self, verbose_name=None, name=None, width_field=None,
-                 height_field=None, patterns=None, **kwargs):
+                 height_field=None, patterns=None,
+                 pil_save_options=None, **kwargs):
         """Constructor
 
         Patterns:
@@ -313,6 +318,10 @@ class ThumbnailField(ImageField):
             ``method_options`` is a dictionary instance used in particular
             method.  for example, ``crop`` method required ``left`` and
             ``upper`` options to process.
+
+        pil_save_options:
+            a dictionary which will be passed as a keyword argument list to
+            PIL image save method.
         """
         patterns = patterns or {}
         if '' in patterns:
@@ -320,6 +329,7 @@ class ThumbnailField(ImageField):
             del patterns['']
         patterns[None] = patterns.get(None, None)
         self.patterns = patterns
+        self.pil_save_options = pil_save_options or settings.THUMBNAILFIELD_DEFAULT_PIL_SAVE_OPTIONS
         super(ThumbnailField, self).__init__(
             verbose_name, name, width_field, height_field, **kwargs)
 
