@@ -8,15 +8,15 @@ django-thumbnailfield
     :target: https://coveralls.io/r/lambdalisue/django-thumbnailfield/
     :alt: Coverage
 
-.. image:: https://pypip.in/d/django-thumbnailfield/badge.png
+.. image:: https://img.shields.io/pypi/dm/django-thumbnailfield.svg
     :target: https://pypi.python.org/pypi/django-thumbnailfield/
     :alt: Downloads
 
-.. image:: https://pypip.in/v/django-thumbnailfield/badge.png
+.. image:: https://img.shields.io/pypi/v/django-thumbnailfield.svg
     :target: https://pypi.python.org/pypi/django-thumbnailfield/
     :alt: Latest version
 
-.. image:: https://pypip.in/wheel/django-thumbnailfield/badge.png
+.. image:: https://img.shields.io/pypi/wheel/django-thumbnailfield.svg
     :target: https://pypi.python.org/pypi/django-thumbnailfield/
     :alt: Wheel Status
 
@@ -24,7 +24,7 @@ django-thumbnailfield
     :target: https://pypi.python.org/pypi/django-thumbnailfield/
     :alt: Egg Status
 
-.. image:: https://pypip.in/license/django-thumbnailfield/badge.png
+.. image:: https://img.shields.io/pypi/l/django-thumbnailfield.svg
     :target: https://pypi.python.org/pypi/django-thumbnailfield/
     :alt: License
 
