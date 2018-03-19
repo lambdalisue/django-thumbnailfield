@@ -6,7 +6,6 @@ __author__ = 'Alisue <lambdalisue@hashnote.net>'
 from django.db.models.fields.files import ImageField
 from django.db.models.fields.files import ImageFieldFile
 from django.db.models.fields.files import ImageFileDescriptor
-from django.utils.text import ugettext_lazy as _
 
 from thumbnailfield.conf import settings
 from thumbnailfield.utils import save_to_storage
@@ -14,7 +13,7 @@ from thumbnailfield.utils import get_content_file
 from thumbnailfield.utils import get_thumbnail_filename
 from thumbnailfield.utils import get_fileformat_from_filename
 from thumbnailfield.utils import get_processed_image
-from thumbnailfield.compatibility import Image
+from thumbnailfield.compatibility import (Image, _)
 
 
 class ThumbnailFileDescriptor(ImageFileDescriptor):
