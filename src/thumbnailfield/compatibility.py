@@ -25,3 +25,9 @@ try:
     from django.test.utils import override_settings
 except ImportError:
     from override_settings import override_settings
+
+# Django >= 1.8
+try:
+    from django.utils.text import ugettext_lazy as _
+except ImportError:
+    from django.utils.translation import gettext_lazy as _
